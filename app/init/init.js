@@ -1,7 +1,7 @@
 const db = require('../db/db');
 
 module.exports = {
-  initdb: function() {
-    db.init();
+  initdb: async function () {
+    await db.init();
   }
 }
