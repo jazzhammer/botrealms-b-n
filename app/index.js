@@ -9,11 +9,10 @@ const db = require('./db/db');
 init.initdb();
 run = async function() {
   const port = process.env.API_PORT;
-  http.createServer((req, res) => {
-    // console.log(`url: ${req.url}`);
+  http.createServer(async (req, res) => {
     handler = handlers[req.url];
     if (handler) {
-      handler(req, res);
+      await handler(req, res);
     } else {
       res.end();
     }
