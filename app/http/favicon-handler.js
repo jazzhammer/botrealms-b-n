@@ -1,4 +1,5 @@
 const favicon = require('serve-favicon');
+const path = require('path');
 
 module.exports = function(req, res) {
   let dir = path.join(__dirname);

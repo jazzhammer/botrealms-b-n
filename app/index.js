@@ -10,10 +10,15 @@ init.initdb();
 run = async function() {
   const port = process.env.API_PORT;
   http.createServer(async (req, res) => {
+    console.log(`url: ${req.url}`);
     handler = handlers[req.url];
     if (handler) {
       await handler(req, res);
     } else {
+      res.writeHead(404, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS, GET, POST'
+      });
       res.end();
     }
   }).listen(port || 5768, () => {

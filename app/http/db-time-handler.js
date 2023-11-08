@@ -4,11 +4,11 @@ module.exports = async function(req, res) {
     const result = await db.query("SELECT NOW()");
     if (result && result.rows.length > 0) {
       res.writeHead(200, {
-        'Content-Type': 'text/plain'
+        'Content-Type': 'text/plain',
+        'Access-Control-Allowed-Origin': '*',
+        'Access-Control-Allowed-Methods': 'GET'
       })
-      // console.log(`result row 0: ${JSON.stringify(result.rows[0]['now'])}`);
-      now = JSON.stringify(result.rows[0]['now']);
-      now = now.substring(1, now.length-1);
+      now = JSON.stringify(result.rows[0]['now']).substring(1, now.length-1);
       res.end(now);
     } else {
       console.log(`no time available from db`)
