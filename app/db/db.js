@@ -12,6 +12,7 @@ const config = {
 };
 
 module.exports = {
+  config,
   init: async function () {
     // test connection, report errors
     const client = new Client(config)
@@ -39,12 +40,5 @@ module.exports = {
       }
     }
     client.end();
-  },
-  query: async function (sql, values) {
-    const client = new Client(config)
-    await client.connect();
-    const result = values ? await client.query(sql, values) : await client.query(sql);
-    client.end();
-    return result;
   }
 }
