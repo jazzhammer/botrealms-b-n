@@ -18,7 +18,7 @@ run = async function() {
       await handler(req, res);
     } else {
       res.writeHead(404, {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': process.env.ALLOW_ORIGIN || '*',
         'Access-Control-Allow-Methods': 'OPTIONS, GET, POST'
       });
       res.end();

@@ -18,7 +18,7 @@ module.exports = async function(req, res) {
   }
 
   let headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': process.env.ALLOW_ORIGIN || '*',
     'Access-Control-Allow-Methods': 'POST, PUT, PATCH, DELETE, GET',
     'Access-Control-Allow-Headers': 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
   };

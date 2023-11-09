@@ -5,7 +5,7 @@ module.exports = async function(req, res) {
     if (result && result.rows.length > 0) {
       res.writeHead(200, {
         'Content-Type': 'text/plain',
-        'Access-Control-Allowed-Origin': '*',
+        'Access-Control-Allowed-Origin': process.env.ALLOW_ORIGIN || '*',
         'Access-Control-Allowed-Methods': 'GET'
       })
       now = JSON.stringify(result.rows[0]['now']).substring(1, now.length-1);
