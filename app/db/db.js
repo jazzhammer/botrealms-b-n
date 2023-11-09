@@ -20,7 +20,7 @@ module.exports = {
     console.log(`migrations from ${__dirname}...`);
     const dir = fs.readdirSync(__dirname);
     for (const entry of dir) {
-      if (entry.startsWith('migration') && entry.endsWith('.sql')) {
+      if (entry.includes('-migration-') && entry.endsWith('.sql')) {
         try {
           console.log(`migration: ${entry}`);
           const sql = fs.readFileSync(path.join(__dirname, entry), {encoding: 'utf8'});
