@@ -1,30 +1,59 @@
 const db = require('../db/db');
 const {Client} = require("pg");
+const url = require('url');
+const querystring = require('querystring');
 
 module.exports = async function(req, res) {
+
+  async function readRequestBody(request) {
+    return new Promise((resolve, reject) => {
+      let body = '';
+      request.on('data', (chunk) => {
+        body += chunk;
+      });
+      request.on('end', () => {
+        resolve(body);
+      });
+    });
+  }
 
   let headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, PUT, PATCH, DELETE, GET',
     'Access-Control-Allow-Headers': 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
   };
-  if (req.method === 'POST') {
+  if (req.method === 'GET') {
+    const client = new Client(db.config)
+    await client.connect();
+    try {
+      const parsed = url.parse(req.url);
+      const query = parsed.query;
+      const queryJson = querystring.parse(query);
+      let {search} = queryJson;
+      search = search.trim();
+      if (search.length > 0) {
+        // TODO: sterilize this search term
+        console.log(`search for ${search}`);
+        sql = `select * from bot where name like '%${search}%'`;
+        const selectResult = await client.query(sql);
+        if (selectResult.rows) {
+          headers['Content-Type']='application/json';
+          res.writeHead(200, headers)
+          res.end(JSON.stringify(selectResult.rows));
+          return;
+        }
+      }
+      res.writeHead(404, headers);
+      res.end();
+    } finally {
+      client.end();
+    }
+  }
+  else if (req.method === 'POST') {
     const client = new Client(db.config)
     await client.connect();
     try {
       let created = null;
-
-      async function readRequestBody(request) {
-        return new Promise((resolve, reject) => {
-          let body = '';
-          request.on('data', (chunk) => {
-            body += chunk;
-          });
-          request.on('end', () => {
-            resolve(body);
-          });
-        });
-      }
 
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);
@@ -72,18 +101,6 @@ module.exports = async function(req, res) {
     await client.connect();
     try {
       let updated = null;
-
-      async function readRequestBody(request) {
-        return new Promise((resolve, reject) => {
-          let body = '';
-          request.on('data', (chunk) => {
-            body += chunk;
-          });
-          request.on('end', () => {
-            resolve(body);
-          });
-        });
-      }
 
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);

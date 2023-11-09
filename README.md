@@ -6,7 +6,7 @@ this is a companion software project for robotics classes i teach at the salmon 
 
 https://www.innovatesa.ca/makerspace/
 
-# philosopy
+# philosophy
 built in node, this project will evolve from use of raw javascript to use of convenient 
 frameworks such as express and nestjs.  the evolutionary steps will be maintained because each 
 step has instructional value. eg. it's worthwhile to know what express and nestjs are doing behind 

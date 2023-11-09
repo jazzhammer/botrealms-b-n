@@ -5,13 +5,15 @@ const path = require('path');
 const http = require('http');
 const init = require('./init/init');
 const db = require('./db/db');
+const url = require('url');
 
 init.initdb();
 run = async function() {
   const port = process.env.API_PORT;
   http.createServer(async (req, res) => {
-    console.log(`url: ${req.url}`);
-    handler = handlers[req.url];
+    const pathname = url.parse(req.url).pathname;
+    console.log(`pathname: ${pathname}`);
+    handler = handlers[pathname];
     if (handler) {
       await handler(req, res);
     } else {
