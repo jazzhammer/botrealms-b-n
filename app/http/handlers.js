@@ -5,6 +5,7 @@ const handlers = {
   '/api/equipments': require('./api-equipments-handler'),
   '/api/botscripts': require('./api-botscripts-handler'),
   '/api/realms': require('./api-realms-handler'),
+  '/api/bot_equipments': require('./api-botequipments-handler'),
 }
 
 

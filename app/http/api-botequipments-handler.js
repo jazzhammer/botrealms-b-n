@@ -30,25 +30,36 @@ module.exports = async function(req, res) {
       const parsed = url.parse(req.url);
       const query = parsed.query;
       const queryJson = querystring.parse(query);
-      let {search, bot_id, equipment_id} = queryJson;
-      search = search.trim();
-      if (search.length > 0) {
-        // TODO: sterilize this search term
-        console.log(`search for ${search}, ${bot_id}, ${equipment_id}`);
-        let whereClause = ``;
-        if (bot_id || equipment_id) {
-          whereClause = `where `;
-          whereClause += bot_id ? `bot_id = '${bot_id}'` : ``;
-          whereClause += equipment_id ? `equipment_id = '${equipment_id}'` : ``;
-        }
-        sql = `select * from bot_equipment ${whereClause}}`;
-        const selectResult = await client.query(sql);
-        if (selectResult.rows) {
-          headers['Content-Type']='application/json';
-          res.writeHead(200, headers)
-          res.end(JSON.stringify(selectResult.rows));
-          return;
-        }
+      let {bot_id, equipment_id} = queryJson;
+      // TODO: sterilize this search term
+      // console.log(`search for ${search}, ${bot_id}, ${equipment_id}`);
+      let whereClause = ``;
+      const wheres = [];
+      const tables = ['bot_equipment'];
+      const fields = [`bot_equipment.*`];
+      if (bot_id) {
+        tables.push(`equipment`);
+        fields.push(`equipment.*`)
+        wheres.push(`bot_equipment.bot_id = '${bot_id}'`);
+        wheres.push(`bot_equipment.equipment_id = equipment.equipment_id`);
+      }
+      if (equipment_id) {
+        tables.push(`bot`);
+        fields.push(`bot.*`)
+        wheres.push(`bot_equipment.bot_id = '${bot_id}'`);
+        wheres.push(`bot_equipment.bot_id = bot.bot_id`);
+      }
+      if (bot_id || equipment_id) {
+        whereClause = `where ${wheres.join(' and ')}`;
+      }
+
+      sql = `SELECT ${fields.join(', ')} FROM ${tables.join(', ')} ${whereClause}`;
+      const selectResult = await client.query(sql);
+      if (selectResult.rows) {
+        headers['Content-Type']='application/json';
+        res.writeHead(200, headers)
+        res.end(JSON.stringify(selectResult.rows));
+        return;
       }
       res.writeHead(404, headers);
       res.end();

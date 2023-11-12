@@ -34,7 +34,6 @@ module.exports = async function(req, res) {
       search = search.trim();
       if (search.length > 0) {
         // TODO: sterilize this search term
-        console.log(`search for ${search}`);
         sql = `select * from bot where name like '%${search}%'`;
         const selectResult = await client.query(sql);
         if (selectResult.rows) {
