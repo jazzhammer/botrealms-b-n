@@ -35,5 +35,18 @@
         ]
       }
     ]
+  },
+  {
+    "table": "bot",
+    "inserts": [
+      {
+        "fields": [
+          {
+            "name": "name",
+            "value": "'scout'"
+          }
+        ]
+      }
+    ]
   }
 ]

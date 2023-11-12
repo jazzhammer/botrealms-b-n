@@ -30,18 +30,18 @@ module.exports = async function(req, res) {
       const parsed = url.parse(req.url);
       const query = parsed.query;
       const queryJson = querystring.parse(query);
-      let {search, bot_id, botscript_id} = queryJson;
+      let {search, bot_id, equipment_id} = queryJson;
       search = search.trim();
       if (search.length > 0) {
         // TODO: sterilize this search term
-        console.log(`search for ${search}, ${bot_id}, ${botscript_id}`);
+        console.log(`search for ${search}, ${bot_id}, ${equipment_id}`);
         let whereClause = ``;
-        if (bot_id || botscript_id) {
+        if (bot_id || equipment_id) {
           whereClause = `where `;
           whereClause += bot_id ? `bot_id = '${bot_id}'` : ``;
-          whereClause += botscript_id ? `botscript_id = '${botscript_id}'` : ``;
+          whereClause += equipment_id ? `equipment_id = '${equipment_id}'` : ``;
         }
-        sql = `select * from bot_botscript ${whereClause}}`;
+        sql = `select * from bot_equipment ${whereClause}}`;
         const selectResult = await client.query(sql);
         if (selectResult.rows) {
           headers['Content-Type']='application/json';
@@ -64,10 +64,10 @@ module.exports = async function(req, res) {
 
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);
-      const {bot_id, botscript_id} = bodyJson;
+      const {bot_id, equipment_id} = bodyJson;
       let selectResult = await client.query(
-        ` SELECT * FROM bot_botscript 
-          where botscript_id = '${botscript_id}' and 
+        ` SELECT * FROM bot_equipment 
+          where equipment_id = '${equipment_id}' and 
           bot_id = '${bot_id}' 
         `
       );
@@ -75,13 +75,13 @@ module.exports = async function(req, res) {
       if (alreadyRows?.length > 0) {
         created = alreadyRows[0];
       } else {
-        const bot_botscript_id = uuid.v4();
+        const bot_equipment_id = uuid.v4();
         const createResult = await client.query(
-          `  INSERT INTO bot_botscript (bot_botscript_id, bot_id, botscript_id) 
-             values ('${bot_botscript_id}', ${bot_id}','${botscript_id}')
+          `  INSERT INTO bot_equipment (bot_equipment_id, bot_id, equipment_id) 
+             values ('${bot_equipment_id}', ${bot_id}','${equipment_id}')
         `);
         selectResult = await client.query(
-          `SELECT * FROM bot_botscript where bot_botscript_id = '${bot_botscript_id}'`
+          `SELECT * FROM bot_equipment where bot_equipment_id = '${bot_equipment_id}'`
         );
         const selectRows = selectResult.rows;
         if (selectRows) {
@@ -122,12 +122,12 @@ module.exports = async function(req, res) {
 
       const body = await readRequestBody(req);
       let bodyJson = JSON.parse(body);
-      const {bot_botscript_id} = bodyJson;
+      const {bot_equipment_id} = bodyJson;
       const selectResult = await client.query(
-        `SELECT * FROM bot_botscript where bot_botscript_id = '${bot_botscript_id}'`
+        `SELECT * FROM bot_equipment where bot_equipment_id = '${bot_equipment_id}'`
       );
       const deleteResult = await client.query(`
-        DELETE from bot_botscript where bot_botscript_id = '${bot_botscript_id}'
+        DELETE from bot_equipment where bot_equipment_id = '${bot_equipment_id}'
       `);
       const selectRows = selectResult.rows;
       if (selectRows) {
