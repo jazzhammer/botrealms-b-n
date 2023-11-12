@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cp -f .env_prod .env & node app/index.js",
-    "dev": "cp -f .env_local .env & nodemon app/index.js"
+    "dev": "cp -f .env_local .env & nodemon app/index.js",
+    "setLocal": "cp -f .env_local .env"
   },
   "author": "",
   "license": "ISC",

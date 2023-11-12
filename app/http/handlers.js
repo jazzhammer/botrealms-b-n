@@ -4,6 +4,7 @@ const handlers = {
   '/api/bots': require('./api-bots-handler'),
   '/api/equipments': require('./api-equipments-handler'),
   '/api/botscripts': require('./api-botscripts-handler'),
+  '/api/realms': require('./api-realms-handler'),
 }
 
 
