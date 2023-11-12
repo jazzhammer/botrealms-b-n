@@ -86,5 +86,18 @@
       }
 
     ]
+  },
+  {
+    "table":  "realm",
+    "inserts": [
+      {
+        "fields": [
+          {
+            "name": "name",
+            "value": "'mars plane'"
+          }
+        ]
+      }
+    ]
   }
 ]
