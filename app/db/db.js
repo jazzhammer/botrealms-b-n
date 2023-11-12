@@ -63,6 +63,13 @@ module.exports = {
           const values = [];
           const fields = insert['fields'];
           for (const field of fields) {
+            if (field.value.query) {
+              const fieldValueResult = await client.query(field.value.query);
+              const fieldValueRow = fieldValueResult.rows[0]
+              console.log(`replace for queried field: ${JSON.stringify(fieldValueRow.qvalue)}`)
+              field.value = `'${fieldValueRow.qvalue}'`;
+            }
+
             pairString = `${field.name} = ${field.value} `
             pairStrings.push(pairString);
             names.push(field.name);

@@ -22,11 +22,11 @@
         "fields": [
           {
             "name": "name",
-            "value": "'chassis'"
+            "value": "'track.1m'"
           },
           {
             "name": "type",
-            "value": "'track.1m'"
+            "value": "'chassis'"
           },
           {
             "name": "description",
@@ -47,6 +47,44 @@
           }
         ]
       }
+    ]
+  },
+  {
+    "table": "bot_equipment",
+    "inserts": [
+      {
+        "fields": [
+          {
+            "name": "bot_id",
+            "value": {
+              "query": "SELECT bot_id AS qvalue from bot where name = 'scout'"
+            }
+          },
+          {
+            "name": "equipment_id",
+            "value": {
+              "query": "SELECT equipment_id AS qvalue from equipment where name = 'gps'"
+            }
+          }
+        ]
+      },
+      {
+        "fields": [
+          {
+            "name": "bot_id",
+            "value": {
+              "query": "SELECT bot_id AS qvalue from bot where name = 'scout'"
+            }
+          },
+          {
+            "name": "equipment_id",
+            "value": {
+              "query": "SELECT equipment_id AS qvalue from equipment where name = 'track.1m'"
+            }
+          }
+        ]
+      }
+
     ]
   }
 ]
