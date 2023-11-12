@@ -2,6 +2,7 @@ const db = require('../db/db');
 const {Client} = require("pg");
 const url = require('url');
 const querystring = require('querystring');
+const uuid = require('uuid');
 
 module.exports = async function(req, res) {
 
@@ -29,12 +30,18 @@ module.exports = async function(req, res) {
       const parsed = url.parse(req.url);
       const query = parsed.query;
       const queryJson = querystring.parse(query);
-      let {search} = queryJson;
+      let {search, bot_id, botscript_id} = queryJson;
       search = search.trim();
       if (search.length > 0) {
         // TODO: sterilize this search term
-        console.log(`search for ${search}`);
-        sql = `select * from equipment where name like '%${search}%'`;
+        console.log(`search for ${search}, ${bot_id}, ${botscript_id}`);
+        let whereClause = ``;
+        if (bot_id || botscript_id) {
+          whereClause = `where `;
+          whereClause += bot_id ? `bot_id = '${bot_id}'` : ``;
+          whereClause += botscript_id ? `bot_id = '${botscript_id}'` : ``;
+        }
+        sql = `select * from botbotscript ${whereClause}}`;
         const selectResult = await client.query(sql);
         if (selectResult.rows) {
           headers['Content-Type']='application/json';
@@ -57,14 +64,25 @@ module.exports = async function(req, res) {
 
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);
-      const {name, type, description} = bodyJson;
-      let selectResult = await client.query(`SELECT * FROM equipment where name = '${name}'`);
+      const {bot_id, botscript_id} = bodyJson;
+      let selectResult = await client.query(
+        ` SELECT * FROM botbotscript 
+          where botscript_id = '${botscript_id}' and 
+          bot_id = '${bot_id}' 
+        `
+      );
       const alreadyRows = selectResult.rows;
       if (alreadyRows?.length > 0) {
         created = alreadyRows[0];
       } else {
-        const createResult = await client.query(`INSERT INTO equipment (name, type, description) values ('${name}','${type}','${description}')`);
-        selectResult = await client.query(`SELECT * FROM equipment where name = '${name}'`);
+        const botbotscript_id = uuid.v4();
+        const createResult = await client.query(
+          `  INSERT INTO botbotscript (botbotscript_id, bot_id, botscript_id) 
+             values ('${botbotscript_id}', ${bot_id}','${botscript_id}')
+        `);
+        selectResult = await client.query(
+          `SELECT * FROM botbotscript where botbotscript_id = '${botbotscript_id}'`
+        );
         const selectRows = selectResult.rows;
         if (selectRows) {
           created = selectRows[0];
@@ -96,34 +114,32 @@ module.exports = async function(req, res) {
     res.writeHead(200, headers);
     res.end();
   }
-  else if (req.method === 'PUT') {
+  else if (req.method === 'DELETE') {
     const client = new Client(db.config)
     await client.connect();
     try {
-      let updated = null;
+      let deleted = null;
 
       const body = await readRequestBody(req);
       let bodyJson = JSON.parse(body);
-      const {equipment_id, name, type, description} = bodyJson;
-      const updateResult = await client.query(
-        `UPDATE equipment set 
-          name = '${name}', 
-          type='${type}', 
-          description='${description}' 
-          where equipment_id = '${equipment_id}'`
+      const {botbotscript_id} = bodyJson;
+      const selectResult = await client.query(
+        `SELECT * FROM botbotscript where botbotscript_id = '${botbotscript_id}'`
       );
-      const selectResult = await client.query(`SELECT * FROM equipment where equipment_id = '${equipment_id}'`);
+      const deleteResult = await client.query(`
+        DELETE from botbotscript where botbotscript_id = '${botbotscript_id}'
+      `);
       const selectRows = selectResult.rows;
       if (selectRows) {
-        updated = selectRows[0];
+        deleted = selectRows[0];
       }
-      if (updated) {
+      if (deleted) {
         headers = {
           ... headers,
           'Content-Type': 'application/json'
         }
-        res.writeHead(201, headers)
-        res.end(JSON.stringify(updated));
+        res.writeHead(200, headers)
+        res.end(JSON.stringify(deleted));
         return;
       } else {
         res.writeHead(500, headers);

@@ -23,6 +23,7 @@ module.exports = async function(req, res) {
     'Access-Control-Allow-Headers': 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
   };
   if (req.method === 'GET') {
+    // TODO: use a pool
     const client = new Client(db.config)
     await client.connect();
     try {

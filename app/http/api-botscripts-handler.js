@@ -34,7 +34,7 @@ module.exports = async function(req, res) {
       if (search.length > 0) {
         // TODO: sterilize this search term
         console.log(`search for ${search}`);
-        sql = `select * from equipment where name like '%${search}%'`;
+        sql = `select * from botscript where name like '%${search}%'`;
         const selectResult = await client.query(sql);
         if (selectResult.rows) {
           headers['Content-Type']='application/json';
@@ -57,14 +57,16 @@ module.exports = async function(req, res) {
 
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);
-      const {name, type, description} = bodyJson;
-      let selectResult = await client.query(`SELECT * FROM equipment where name = '${name}'`);
+      const {name, type, logic} = bodyJson;
+      let selectResult = await client.query(`SELECT * FROM botscript where name = '${name}'`);
       const alreadyRows = selectResult.rows;
       if (alreadyRows?.length > 0) {
         created = alreadyRows[0];
       } else {
-        const createResult = await client.query(`INSERT INTO equipment (name, type, description) values ('${name}','${type}','${description}')`);
-        selectResult = await client.query(`SELECT * FROM equipment where name = '${name}'`);
+        const createResult = await client.query(
+          `INSERT INTO botscript (name, type, logic) values ('${name}','${type}','${logic}')`
+        );
+        selectResult = await client.query(`SELECT * FROM botscript where name = '${name}'`);
         const selectRows = selectResult.rows;
         if (selectRows) {
           created = selectRows[0];
@@ -104,15 +106,11 @@ module.exports = async function(req, res) {
 
       const body = await readRequestBody(req);
       let bodyJson = JSON.parse(body);
-      const {equipment_id, name, type, description} = bodyJson;
+      const {botscript_id, name, logic} = bodyJson;
       const updateResult = await client.query(
-        `UPDATE equipment set 
-          name = '${name}', 
-          type='${type}', 
-          description='${description}' 
-          where equipment_id = '${equipment_id}'`
+        `UPDATE botscript set name = '${name}', logic='${logic}' where botscript_id = '${botscript_id}'`
       );
-      const selectResult = await client.query(`SELECT * FROM equipment where equipment_id = '${equipment_id}'`);
+      const selectResult = await client.query(`SELECT * FROM botscript where botscript_id = '${botscript_id}'`);
       const selectRows = selectResult.rows;
       if (selectRows) {
         updated = selectRows[0];
