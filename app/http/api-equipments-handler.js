@@ -34,7 +34,7 @@ module.exports = async function(req, res) {
       if (search.length > 0) {
         // TODO: sterilize this search term
         console.log(`search for ${search}`);
-        sql = `select * from equipment where name like '%${search}%'`;
+        sql = `select * from equipment where name like '%${search}%' or type like '%${search}%'`;
         const selectResult = await client.query(sql);
         if (selectResult.rows) {
           headers['Content-Type']='application/json';
@@ -58,7 +58,9 @@ module.exports = async function(req, res) {
       const body = await readRequestBody(req);
       bodyJson = JSON.parse(body);
       const {name, type, description} = bodyJson;
-      let selectResult = await client.query(`SELECT * FROM equipment where name = '${name}'`);
+      let selectResult = await client.query(
+        `SELECT * FROM equipment where name = '${name}'`
+      );
       const alreadyRows = selectResult.rows;
       if (alreadyRows?.length > 0) {
         created = alreadyRows[0];

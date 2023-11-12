@@ -1,0 +1,39 @@
+[
+  {
+    "table": "equipment",
+    "inserts": [
+      {
+        "fields": [
+          {
+            "name": "name",
+            "value": "'gps'"
+          },
+          {
+            "name": "type",
+            "value": "'xyz'"
+          },
+          {
+            "name": "description",
+            "value": "'provides sensor data: x, y, x describe the 3d position of the gps in realm space.'"
+          }
+        ]
+      },
+      {
+        "fields": [
+          {
+            "name": "name",
+            "value": "'chassis'"
+          },
+          {
+            "name": "type",
+            "value": "'track.1m'"
+          },
+          {
+            "name": "description",
+            "value": "'small tracked vehicle'"
+          }
+        ]
+      }
+    ]
+  }
+]
